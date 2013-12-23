@@ -61,7 +61,7 @@ public class SpawnLayer extends IconLayer {
 			x = location.x;
 			y = location.y;
 		} else {
-			Log.debug("Unable to find spawn biome.");
+			//Log.debug("Unable to find spawn biome.");
 		}
 
 		return new Point(x, y);

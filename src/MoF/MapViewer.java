@@ -39,6 +39,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -56,7 +57,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	private double scale = 1;
 	public int strongholdCount, villageCount;
 	
-	private Map worldMap;
+	public Map worldMap;
 	private MapObject selectedObject = null;
 	private Point lastMouse;
 	public Point lastRightClick = null;
@@ -75,7 +76,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 	private FontMetrics textMetrics;
 
 	public void dispose() {
-		Log.debug("DISPOSING OF MAPVIEWER");
+		//Log.debug("DISPOSING OF MAPVIEWER");
 		worldMap.dispose();
 		menu.removeAll();
 		proj = null;
@@ -181,6 +182,7 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 			drawMouseInformation(g2d, curMouse);
 		if (Options.instance.showFPS.get())
 			drawFramerate(g2d);
+		drawRequirements(g2d);
 	}
 	
 	private void drawSeed(Graphics2D g2d) {
@@ -201,6 +203,17 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		g2d.setColor(textColor);
 		g2d.drawString(mouseLocationText, getWidth() - (18 + stringWidth), 30);
 	}
+	
+	private void drawRequirements(Graphics2D g2d) {		
+		g2d.setColor(panelColor);
+		String requirements = worldMap.getRequirements();
+		int stringWidth = textMetrics.stringWidth(requirements);
+		g2d.fillRect(getWidth() - (25 + stringWidth), getHeight() - 40, (15 + stringWidth), 30);
+		
+		g2d.setColor(textColor);
+		g2d.drawString(requirements, getWidth() - (18 + stringWidth), getHeight() - 20);
+	}
+	
 	private void drawSelectedInformation(Graphics2D g2d) {
 		g2d.setColor(panelColor);
 		String selectionMessage = selectedObject.getName() + " [" + selectedObject.rx + ", " + selectedObject.ry + "]";
@@ -304,18 +317,16 @@ public class MapViewer extends JComponent implements MouseListener, MouseWheelLi
 		Graphics2D g2d = image.createGraphics();
 		
 		worldMap.draw(g2d);
+		
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setFont(textFont);
+		
+		textMetrics = g2d.getFontMetrics(textFont);
 
 		FontMetrics textMetrics = g2d.getFontMetrics(textFont);
 		
-		// TODO: Change this to drawSeed
-		g2d.setColor(panelColor);
-		g2d.fillRect(10, 10, textMetrics.stringWidth(Options.instance.getSeedMessage()) + 20, 30);
-		
-		
-		g2d.setColor(textColor);
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g2d.setFont(textFont);
-		g2d.drawString(Options.instance.getSeedMessage(), 20, 30);
+		drawSeed(g2d);
+		drawRequirements(g2d);
 		
 		
 		try {

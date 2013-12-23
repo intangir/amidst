@@ -124,7 +124,7 @@ public class AmidstMenu extends JMenuBar {
 							
 							//If a string was returned, say so.
 							if (worldType != null)
-								window.setProject(new Project(seed, worldType));
+								window.setProject(new Project(seed, worldType, window));
 						}
 					
 				});

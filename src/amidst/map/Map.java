@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Stack;
 
 import javax.imageio.ImageIO;
@@ -27,6 +28,8 @@ public class Map {
 	
 	private double scale = 0.25;
 	private Point2D.Double start;
+	private HashMap<String, Integer> biomeMap; 
+	private String missing;
 	
 	private int tileWidth, tileHeight;
 	public int width = 1, height = 1;
@@ -69,6 +72,8 @@ public class Map {
 		hintMap.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		
 		renderingHints = new RenderingHints(hintMap);
+		
+		biomeMap = new HashMap<String, Integer>();
 	}
 	
 	
@@ -76,6 +81,8 @@ public class Map {
 		if (firstDraw) {
 			firstDraw = false;
 			centerOn(0, 0);
+			missing = "";
+			biomeMap.clear();
 		}
 		// TODO: Enable via settings?
 		//g.setRenderingHints(renderingHints);
@@ -405,4 +412,98 @@ public class Map {
 		return "Unknown";
 	}
 
+	public String checkRequirements() {
+		missing = "Missing: ";
+		String biome;
+		Point p = new Point();
+		int v;
+		if(biomeMap.isEmpty())
+		{
+			for(int x = -1600; x <= 1600; x+=5) {
+				for(int y = -1600; y <= 1600; y+=5) {
+					p.setLocation(x, y);
+					biome = getBiomeNameAt(p);
+
+					v = biomeMap.containsKey(biome) ? biomeMap.get(biome) : 0;
+					biomeMap.put(biome, v + 1);
+				
+				}
+			}
+		}
+		return getRequirements();
+	}
+	
+	public String getRequirements() {
+		missing = "Missing: ";
+		Point p = new Point();
+		p.setLocation(0,0);
+		if(!"Desert".equals(getBiomeNameAt(p)))
+		{
+			missing += "Spawn,";
+		}
+		if(!biomeMap.containsKey("Ocean"))
+		{
+			missing += "Ocean,";
+		}
+		if(!biomeMap.containsKey("Swampland"))
+		{
+			missing += "Swampland,";
+		}
+		if(!biomeMap.containsKey("Ice Mountains"))
+		{
+			missing += "Ice Mountains,";
+		}
+		if(!biomeMap.containsKey("Extreme Hills"))
+		{
+			missing += "Extreme Hills,";
+		}
+		if(!biomeMap.containsKey("Desert"))
+		{
+			missing += "Desert,";
+		}
+		if(!biomeMap.containsKey("Roofed Forest"))
+		{
+			missing += "Roofed,";
+		}
+		
+		if(!biomeMap.containsKey("Savanna"))
+		{
+			missing += "Savanna,";
+		}
+/*		if(!biomeMap.containsKey("Mesa"))
+		{
+			missing += "Mesa,";
+		}
+*/		if(!biomeMap.containsKey("Jungle"))
+		{
+			missing += "Jungle,";
+		}
+/*		if(!biomeMap.containsKey("Mushroom Island"))
+		{
+			missing += "Mushroom,";
+		}
+*/		if(!biomeMap.containsKey("Mega Taiga"))
+		{
+			missing += "Mega Taiga,";
+		}
+		if(!biomeMap.containsKey("Ice Plains Spikes"))
+		{
+			missing += "Spikes,";
+		}
+		if(!biomeMap.containsKey("Sunflower Plains"))
+		{
+			missing += "Sunflowers,";
+		}
+		if(!biomeMap.containsKey("Flower Forest"))
+		{
+			missing += "Flower Forest,";
+		}
+		
+		if(missing.equals("Missing: "))
+		{
+			missing = "PERFECT";
+		}
+		
+		return missing;
+	}
 }
